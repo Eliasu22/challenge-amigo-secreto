@@ -1,55 +1,66 @@
-/** PROYECTO: Amigo Secreto  */
-
-// El principal objetivo de este desafío es fortalecer tus habilidades en lógica de programación. Aquí deberás desarrollar la lógica para resolver el problema.
-
-// Array para almacenar los nombres de los amigos
-let amigos = [];
+// Variables globales
+let listaAmigos = [];
+let listaNombresMostrados = document.getElementById("listaAmigos");
+let listaNombresSorteados = [];
+let nombreMostrado = document.getElementById("resultado");
 
 // Función para agregar amigos a la lista
 function agregarAmigo() {
-    let input = document.getElementById("amigo");
-    let nombreAmigo = input.value.trim();
+    let nombreAmigo = document.getElementById("amigo").value.trim();
+    let regex = /^[A-Za-zÁÉÍÓÚáéíóúñÑ\s]+$/; // Solo letras y espacios
 
     if (nombreAmigo === "") {
         alert("Por favor, inserte un nombre.");
         return;
-    }
-
-    amigos.push(nombreAmigo);
-    input.value = ""; // Limpiar el campo de entrada
-    actualizarLista();
-}
-
-// Funcion para actualizar la lista de amigos
-function actualizarLista()
-{
-    let lista = document.getElementById('listaAmigos');
-    lista.innerHTML = "";
-    let i;
-
-    for(i=0; i<amigos.length; i++)
-    {
-        let li = document.createElement("li");
-        li.textContent = amigos[i];
-        lista.appendChild(li);
-    }
-}
-
-// Funcion para sortear los amigos
-function sortearAmigo()
-{
-    if(amigos.length === 0)
-    {
-        alert("No hay nombres en la lista, no se puede sortear.");
+    } else if (!regex.test(nombreAmigo)) {
+        alert("El nombre solo puede contener letras y espacios.");
+        return;
+    } else if (listaAmigos.includes(nombreAmigo)) {
+        alert("Este nombre ya ha sido ingresado.");
         return;
     }
 
-    let indice = Math.floor(Math.random() * amigos.length);
-    let amigoSorteado = amigos[indice];
-
-    let resultado = document.getElementById('resultado');
-    resultado.innerHTML =  `<li>El amigo secreto es: <strong>${amigoSorteado}</strong></li>`;
-
+    nombreAmigo = nombreAmigo.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+    listaAmigos.push(nombreAmigo);
+    document.getElementById("amigo").value = "";
+    actualizarLista();
 }
- 
+
+// Función para actualizar la lista en pantalla
+function actualizarLista() {
+    listaNombresMostrados.innerHTML = "";
+    listaAmigos.forEach((nombre) => {
+        let li = document.createElement("li");
+        li.textContent = nombre;
+        listaNombresMostrados.appendChild(li);
+    });
+}
+
+// Función para sortear amigos
+function sortearAmigo() {
+    if (listaAmigos.length === 0) {
+        alert("No hay ningún nombre disponible.");
+        return;
+    } else if (listaNombresSorteados.length === listaAmigos.length) {
+        alert("Todos los nombres han sido sorteados.");
+        return;
+    }
+
+    let nombreSorteado = "";
+    while (nombreSorteado === "" || listaNombresSorteados.includes(nombreSorteado)) {
+        let indiceSorteado = Math.floor(Math.random() * listaAmigos.length);
+        nombreSorteado = listaAmigos[indiceSorteado];
+    }
+
+    listaNombresSorteados.push(nombreSorteado);
+    nombreMostrado.innerHTML = `<li>El amigo secreto es: <strong>${nombreSorteado}</strong></li>`;
+}
+
+// Función para reiniciar el sorteo
+function reiniciarPrograma() {
+    listaAmigos = [];
+    listaNombresSorteados = [];
+    nombreMostrado.innerHTML = "";
+    actualizarLista();
+}
 
